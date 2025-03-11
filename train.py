@@ -36,6 +36,10 @@ def train_model(model, train_loader, epochs=10, lr=1e-3, device="cpu"):
         
         avg_loss = total_loss / len(train_loader)
         print(f"[Epoch {epoch + 1} of {epochs}] Loss: {avg_loss:.4f}")
+        
+    model_path = f"results/{model.__class__.__name__}.pth"
+    torch.save(model.state_dict(), model_path)
+    print(f"\n[INFO] Model saved at {model_path}\n")
     print("")
 
 def main(model_name, dataset, epochs=10, batch_size=64, lr=1e-3):
