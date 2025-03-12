@@ -5,7 +5,7 @@ from utils import get_test_loader
 from utils import add_noise
 from utils import save_results
 from utils import print_model_info
-from utils import model_select
+from models import select_model
 
 def test_model(model, test_loader, dataset, device="cpu"):
     model.to(device)
@@ -45,7 +45,7 @@ def test_model(model, test_loader, dataset, device="cpu"):
 def main(model_name, dataset, batch_size):
     test_loader = get_test_loader(dataset=dataset, batch_size=batch_size)
     
-    model = model_select(model_name)
+    model = select_model(model_name)
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model_path = f"results/weights/{model.__class__.__name__}_{dataset}.pth"
     try:

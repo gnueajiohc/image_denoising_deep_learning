@@ -6,7 +6,7 @@ import torch.optim as optim
 from utils import get_train_loader
 from utils import add_noise
 from utils import print_model_info
-from models import DenoisingCNN, DenoisingCAE, DenoisingUNet
+from models import select_model
 
 def train_model(model, train_loader, save_name, epochs=10, lr=1e-3, device="cpu"):
     model.to(device)
@@ -44,16 +44,7 @@ def train_model(model, train_loader, save_name, epochs=10, lr=1e-3, device="cpu"
 def main(model_name, dataset, epochs, batch_size, lr):
     train_loader = get_train_loader(dataset=dataset, batch_size=batch_size)
     
-    models = {
-        "cnn": DenoisingCNN(hidden_channels=[64, 128, 64]),
-        "cae": DenoisingCAE(hidden_channels=[8, 16, 32], use_batchnorm=True),
-        "unet": DenoisingUNet(hidden_channels=[16, 32, 64], use_batchnorm=True)
-    }
-    
-    if model_name not in models:
-        raise ValueError(f"Not available model")
-    
-    model = models[model_name]
+    model = select_model(model_name)
     device = "cuda" if torch.cuda.is_available() else "cpu"
     print_model_info(model_name, dataset)
     

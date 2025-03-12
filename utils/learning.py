@@ -1,13 +1,6 @@
 import torch
 import matplotlib.pyplot as plt
 import torchvision.utils as vutils
-from ..models import DenoisingCNN, DenoisingCAE, DenoisingUNet
-
-model_list = {
-    "cnn": DenoisingCNN(hidden_channels=[64, 128, 64]),
-    "cae": DenoisingCAE(hidden_channels=[8, 16, 32], use_batchnorm=True),
-    "unet": DenoisingUNet(hidden_channels=[16, 32, 64], use_batchnorm=True)
-}
 
 def print_model_info(model_name, dataset):
     print("[MODEL INFO]".center(30, '-'))
@@ -46,10 +39,3 @@ def save_results(original, noisy, denoised, save_path, num_images=3):
     plt.title("Original → Noisy → Denoised")
     plt.savefig(save_path, dpi=300, bbox_inches="tight")
     plt.close()
-
-def model_select(model_name):
-    if model_name not in model_list:
-        raise ValueError(f"Not available model")
-    
-    model = model_list[model_name]
-    return model
