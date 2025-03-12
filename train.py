@@ -1,3 +1,4 @@
+import os
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -23,7 +24,7 @@ def train_model(model, train_loader, epochs=10, lr=1e-3, device="cpu"):
         
         for images, _ in train_loader:
             images = images.to(device)
-            noisy_images = images + 0.2 * torch.rand_like(images)
+            noisy_images = images + 0.3 * torch.randn_like(images)
             noisy_images = torch.clamp(noisy_images, 0.0, 1.0)
             
             optimizer.zero_grad()
@@ -36,7 +37,10 @@ def train_model(model, train_loader, epochs=10, lr=1e-3, device="cpu"):
         
         avg_loss = total_loss / len(train_loader)
         print(f"[Epoch {epoch + 1} of {epochs}] Loss: {avg_loss:.4f}")
-        
+    
+    save_dir = "results"
+    os.makedirs(save_dir, exist_ok=True)
+    
     model_path = f"results/{model.__class__.__name__}.pth"
     torch.save(model.state_dict(), model_path)
     print(f"\n[INFO] Model saved at {model_path}\n")
