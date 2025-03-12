@@ -5,20 +5,15 @@ import torch.nn as nn
 import torch.optim as optim
 from utils import get_train_loader
 from utils import add_noise
-from models import DenoisingCNN
+from utils import print_model_info
+from models import DenoisingCNN, DenoisingCAE, DenoisingUNet
 
-def print_model_info(model_name, dataset):
-    print("[MODEL INFO]".center(30, '-'))
-    print(f"\nModel: {model_name.upper()}")
-    print(f"Dataset: {dataset}\n")
-
-def train_model(model, train_loader, epochs=10, lr=1e-3, device="cpu"):
+def train_model(model, train_loader, save_name, epochs=10, lr=1e-3, device="cpu"):
     model.to(device)
     optimizer = optim.Adam(model.parameters(), lr=lr)
     criterion = nn.MSELoss()
     
-    print("[TRAINING]".center(30, '-'))
-    print("")
+    print("[TRAINING]\n".center(30, '-'))
     
     for epoch in range(epochs):
         model.train()
@@ -41,29 +36,29 @@ def train_model(model, train_loader, epochs=10, lr=1e-3, device="cpu"):
     
     save_dir = "results"
     os.makedirs(save_dir, exist_ok=True)
-    
-    model_path = f"results/{model.__class__.__name__}.pth"
+    model_path = f"results/weights/{save_name}.pth"
     torch.save(model.state_dict(), model_path)
+    
     print(f"\n[INFO] Model saved at {model_path}\n")
-    print("")
 
 def main(model_name, dataset, epochs, batch_size, lr):
     train_loader = get_train_loader(dataset=dataset, batch_size=batch_size)
     
     models = {
-        "cnn": DenoisingCNN(hidden_channels=[64, 128, 64])
+        "cnn": DenoisingCNN(hidden_channels=[64, 128, 64]),
+        "cae": DenoisingCAE(hidden_channels=[8, 16, 32], use_batchnorm=True),
+        "unet": DenoisingUNet(hidden_channels=[16, 32, 64], use_batchnorm=True)
     }
     
     if model_name not in models:
         raise ValueError(f"Not available model")
     
     model = models[model_name]
-    
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    
     print_model_info(model_name, dataset)
     
-    train_model(model, train_loader, epochs=epochs, lr=lr, device=device)
+    save_name = f"{model.__class__.__name__}_{dataset}"
+    train_model(model, train_loader, save_name=save_name, epochs=epochs, lr=lr, device=device)
     
 if __name__=="__main__":
     parser = argparse.ArgumentParser(description="Denoising model trainer")

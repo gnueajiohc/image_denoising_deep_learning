@@ -4,14 +4,10 @@ from utils import psnr, ssim
 from utils import get_test_loader
 from utils import add_noise
 from utils import save_results
-from models import DenoisingCNN
+from utils import print_model_info
+from utils import model_select
 
-def print_model_info(model_name, dataset):
-    print("[MODEL INFO]".center(30, '-'))
-    print(f"\nModel: {model_name.upper()}")
-    print(f"Dataset: {dataset}\n")
-
-def test_model(model, test_loader, device="cpu"):
+def test_model(model, test_loader, dataset, device="cpu"):
     model.to(device)
     model.eval()
     
@@ -39,27 +35,19 @@ def test_model(model, test_loader, device="cpu"):
     avg_psnr = total_psnr / num_samples
     avg_ssim = total_ssim / num_samples
     
-    print(f"[INFO] Eval score - PSNR: {avg_psnr:.4f}, SSIM: {avg_ssim:.4f}")
+    print(f"[INFO] Eval score - PSNR: {avg_psnr:.4f}, SSIM: {avg_ssim:.4f}\n")
     
-    save_results(images, noisy_images, denoised_images, num_images=3)
+    save_path = f"results/test/{model.__class__.__name__}_{dataset}"
+    save_results(images, noisy_images, denoised_images, save_path=save_path ,num_images=3)
     
     return avg_psnr, avg_ssim
 
 def main(model_name, dataset, batch_size):
     test_loader = get_test_loader(dataset=dataset, batch_size=batch_size)
     
-    models = {
-        "cnn": DenoisingCNN(hidden_channels=[64, 128, 64])
-    }
-    
-    if model_name not in models:
-        raise ValueError(f"Not available model")
-    
-    model = models[model_name]
-    
+    model = model_select(model_name)
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    
-    model_path = f"results/{model.__class__.__name__}.pth"
+    model_path = f"results/weights/{model.__class__.__name__}_{dataset}.pth"
     try:
         model.load_state_dict(torch.load(model_path, map_location=device))
         print(f"[INFO] Loaded model from {model_path}")
@@ -69,7 +57,7 @@ def main(model_name, dataset, batch_size):
     
     print_model_info(model_name, dataset)
     
-    test_model(model, test_loader, device=device)
+    test_model(model, test_loader, dataset=dataset, device=device)
 
 if __name__=="__main__":
     parser = argparse.ArgumentParser(description="Denoising model tester")
