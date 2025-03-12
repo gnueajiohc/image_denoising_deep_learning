@@ -22,7 +22,7 @@ def test_model(model, test_loader, device="cpu"):
     with torch.no_grad():
         for images, _ in test_loader:
             images = images.to(device)
-            noisy_images = images + 0.2 * torch.rand_like(images)
+            noisy_images = images + 0.3 * torch.randn_like(images)
             noisy_images = torch.clamp(noisy_images, 0.0, 1.0)
             
             denoised_images = model(images)
