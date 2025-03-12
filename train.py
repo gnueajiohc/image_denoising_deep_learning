@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from utils import get_train_loader
+from utils import add_noise
 from models import DenoisingCNN
 
 def print_model_info(model_name, dataset):
@@ -24,11 +25,10 @@ def train_model(model, train_loader, epochs=10, lr=1e-3, device="cpu"):
         
         for images, _ in train_loader:
             images = images.to(device)
-            noisy_images = images + 0.3 * torch.randn_like(images)
-            noisy_images = torch.clamp(noisy_images, 0.0, 1.0)
+            noisy_images = add_noise(images)
             
             optimizer.zero_grad()
-            outputs = model(images)
+            outputs = model(noisy_images)
             loss = criterion(outputs, images)
             loss.backward()
             optimizer.step()

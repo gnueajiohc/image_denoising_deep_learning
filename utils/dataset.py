@@ -21,6 +21,9 @@ def get_dataloader(dataset="CIFAR10", batch_size=64, train=True):
     
     if dataset.upper() == "CIFAR10":
         dataset = datasets.CIFAR10(root="./data", train=train, transform=transform, download=True)
+    elif dataset.upper() == "STL10":
+        split = "train" if train else "test"
+        dataset = datasets.STL10(root="./data", split=split, transform=transform, download=True)
     # Here, you can add whatever dataset you want
     else:
         raise ValueError(f"Not available dataset.")

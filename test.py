@@ -1,6 +1,8 @@
 import torch
 from utils import psnr, ssim
 from utils import get_test_loader
+from utils import add_noise
+from utils import save_results
 from models import DenoisingCNN
 
 def print_model_info(model_name, dataset):
@@ -22,10 +24,9 @@ def test_model(model, test_loader, device="cpu"):
     with torch.no_grad():
         for images, _ in test_loader:
             images = images.to(device)
-            noisy_images = images + 0.3 * torch.randn_like(images)
-            noisy_images = torch.clamp(noisy_images, 0.0, 1.0)
+            noisy_images = add_noise(images)
             
-            denoised_images = model(images)
+            denoised_images = model(noisy_images)
             
             psnr_value = psnr(denoised_images, images)
             ssim_value = ssim(denoised_images, images)
@@ -38,6 +39,8 @@ def test_model(model, test_loader, device="cpu"):
     avg_ssim = total_ssim / num_samples
     
     print(f"[INFO] Eval score - PSNR: {avg_psnr:.4f}, SSIM: {avg_ssim:.4f}")
+    
+    save_results(images, noisy_images, denoised_images, num_images=3)
     
     return avg_psnr, avg_ssim
 
