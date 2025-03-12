@@ -1,4 +1,5 @@
 import os
+import argparse
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -46,7 +47,7 @@ def train_model(model, train_loader, epochs=10, lr=1e-3, device="cpu"):
     print(f"\n[INFO] Model saved at {model_path}\n")
     print("")
 
-def main(model_name, dataset, epochs=10, batch_size=64, lr=1e-3):
+def main(model_name, dataset, epochs, batch_size, lr):
     train_loader = get_train_loader(dataset=dataset, batch_size=batch_size)
     
     models = {
@@ -65,4 +66,14 @@ def main(model_name, dataset, epochs=10, batch_size=64, lr=1e-3):
     train_model(model, train_loader, epochs=epochs, lr=lr, device=device)
     
 if __name__=="__main__":
-    main(model_name="cnn", dataset="CIFAR10", epochs=10, batch_size=64, lr=1e-3)
+    parser = argparse.ArgumentParser(description="Denoising model trainer")
+    
+    parser.add_argument("--model_name", type=str, default="cnn", help="Name of the model (default: cnn)")
+    parser.add_argument("--dataset", type=str, default="CIFAR10", help="Name of the dataset (default: CIFAR10)")
+    parser.add_argument("--epochs", type=int, default=10, help="Num of Epochs for training (default: 10)")
+    parser.add_argument("--batch_size", type=int, default=64, help="Batch size for training (default: 64)")
+    parser.add_argument("--lr", type=float, default=1e-3, help="Learning rate for training (default: 1e-3)")
+    
+    args = parser.parse_args()
+    
+    main(model_name=args.model_name, dataset=args.dataset, epochs=args.epochs, batch_size=args.batch_size, lr=args.lr)

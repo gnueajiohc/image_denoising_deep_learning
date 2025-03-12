@@ -1,3 +1,4 @@
+import argparse
 import torch
 from utils import psnr, ssim
 from utils import get_test_loader
@@ -44,7 +45,7 @@ def test_model(model, test_loader, device="cpu"):
     
     return avg_psnr, avg_ssim
 
-def main(model_name, dataset, batch_size=64):
+def main(model_name, dataset, batch_size):
     test_loader = get_test_loader(dataset=dataset, batch_size=batch_size)
     
     models = {
@@ -71,4 +72,12 @@ def main(model_name, dataset, batch_size=64):
     test_model(model, test_loader, device=device)
 
 if __name__=="__main__":
-    main(model_name="cnn", dataset="CIFAR10", batch_size=64) 
+    parser = argparse.ArgumentParser(description="Denoising model tester")
+    
+    parser.add_argument("--model_name", type=str, default="cnn", help="Name of the model (default: cnn)")
+    parser.add_argument("--dataset", type=str, default="CIFAR10", help="Name of the dataset (default: CIFAR10)")
+    parser.add_argument("--batch_size", type=int, default=64, help="Batch size for testing (default: 64)")
+    
+    args = parser.parse_args()
+    
+    main(model_name=args.model_name, dataset=args.dataset, batch_size=args.batch_size)
