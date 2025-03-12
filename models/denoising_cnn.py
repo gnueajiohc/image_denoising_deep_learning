@@ -10,15 +10,13 @@ class DenoisingCNN(nn.Module):
     
     Args:
         in_channels (int): the num of input image channels
-        out_channels (int): the num of output image channels
-        hidden_channels (list[int]): the num of input image channels
+        hidden_channels (list[int]): the num of hidden layers' channels
         kernel_size (int): kernel size
         use_batchnorm (bool): whether to use batch normalization
     """
     def __init__(
         self,
         in_channels=3,
-        out_channels=3,
         hidden_channels=[64, 128, 64],
         kernel_size=3,
         use_batchnorm=False
@@ -41,7 +39,7 @@ class DenoisingCNN(nn.Module):
             current_in_channels = current_out_channels
         
         layers.append(nn.Conv2d(current_in_channels,
-                                out_channels,
+                                in_channels,
                                 kernel_size=kernel_size,
                                 stride=1,
                                 padding=kernel_size // 2))
