@@ -3,9 +3,9 @@ from .denoising_cae import DenoisingCAE
 from .denoising_unet import DenoisingUNet
 
 model_list = {
-    "cnn": DenoisingCNN(hidden_channels=[64, 128, 64]),
-    "cae": DenoisingCAE(hidden_channels=[8, 16, 32], use_batchnorm=True),
-    "unet": DenoisingUNet(hidden_channels=[16, 32, 64], use_batchnorm=True)
+    "cnn": DenoisingCNN(hidden_channels=[32, 64, 128, 64, 32]),
+    "cae": DenoisingCAE(hidden_channels=[16, 32, 64], use_batchnorm=True),
+    "unet": DenoisingUNet(hidden_channels=[16, 32, 64, 128], use_batchnorm=True)
 }
 
 def select_model(model_name):

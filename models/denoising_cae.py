@@ -27,15 +27,7 @@ class DenoisingCAE(nn.Module):
         current_in_channels = in_channels
         
         for current_out_channels in hidden_channels:
-            encoders.append(nn.Conv2d(current_in_channels,
-                                      current_out_channels,
-                                      kernel_size=kernel_size,
-                                      stride=2,
-                                      padding=kernel_size // 2))
-            if use_batchnorm:
-                encoders.append(nn.BatchNorm2d(current_out_channels))
-            encoders.append(nn.ReLU(inplace=True))
-            
+            encoders.append(self.conv_block(current_in_channels, current_out_channels))
             current_in_channels = current_out_channels
         
         self.encoder = nn.Sequential(*encoders)
