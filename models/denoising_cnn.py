@@ -17,7 +17,7 @@ class DenoisingCNN(nn.Module):
     def __init__(
         self,
         in_channels=3,
-        hidden_channels=[64, 128, 64],
+        hidden_channels=[32, 64, 128, 64, 32],
         kernel_size=3,
         use_batchnorm=False
     ):

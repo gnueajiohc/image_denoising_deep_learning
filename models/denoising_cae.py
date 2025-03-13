@@ -17,7 +17,7 @@ class DenoisingCAE(nn.Module):
     def __init__(
         self,
         in_channels=3,
-        hidden_channels=[8, 16, 32],
+        hidden_channels=[16, 32, 64],
         kernel_size=3,
         use_batchnorm=False
     ):
@@ -64,6 +64,19 @@ class DenoisingCAE(nn.Module):
         decoders.append(nn.Sigmoid())
         
         self.decoder = nn.Sequential(*decoders)
+    
+    def conv_block(self, in_channels, out_channels, kernel_size, use_batchnorm):
+        layers = [
+            nn.Conv2d(in_channels, out_channels, kernel_size=kernel_size, stride=2, padding=1),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(out_channels, out_channels, kernel_size=kernel_size, stride=1, padding=1),
+            nn.ReLU(inplace=True)
+        ]
+        if use_batchnorm:
+            layers.insert(1,nn.BatchNorm2d(out_channels))
+            layers.insert(-1,nn.BatchNorm2d(out_channels))
+            
+        return nn.Sequential(*layers)
     
     def forward(self, x):
         encoded = self.encoder(x)

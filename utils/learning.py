@@ -20,27 +20,17 @@ def add_noise(image, noise_level=0.2, sp_prob=0.05):
 
     return noisy_image
 
-import matplotlib.pyplot as plt
-import torch
-
 def save_test_figure(original, noisy, denoised, save_path, num_images=3):
     """
     Displays and saves up to 'num_images' rows of images, each row containing
     (Original, Noisy, Denoised) side by side.
 
-    Parameters:
-    -----------
-    original : torch.Tensor
-        A collection of original images [D, C, H, W].
-    noisy : torch.Tensor
-        A collection of noisy images [D, C, H, W].
-    denoised : torch.Tensor
-        A collection of denoised images [D, C, H, W].
-    save_path : str
-        The path (including filename) where the plot will be saved.
-    num_images : int, optional
-        Number of image triplets (Original, Noisy, Denoised) to display and save.
-        Defaults to 3.
+    Args:
+        original (torch.Tensor): A collection of original images [D, C, H, W].
+        noisy (torch.Tensor): A collection of noisy images [D, C, H, W].
+        denoised (torch.Tensor): A collection of denoised images [D, C, H, W].
+        save_path (str): The path (including filename) where the plot will be saved.
+        num_images (int): Number of image triplets (Original, Noisy, Denoised) to display and save.
     """
 
     num_images = min(num_images, original.shape[0])
@@ -65,5 +55,5 @@ def save_test_figure(original, noisy, denoised, save_path, num_images=3):
     plt.close()
 
 def save_test_score(psnr, ssim, save_file_name):
-    with open(f"result/score/{save_file_name}", "w") as f:
+    with open(f"results/score/{save_file_name}", "w") as f:
         f.write(f"[INFO] Eval score - PSNR: {psnr:.4f}, SSIM: {ssim:.4f}\n")
