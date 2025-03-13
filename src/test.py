@@ -59,7 +59,7 @@ def test_model(model, test_loader, dataset, device="cpu"):
     save_test_score(avg_psnr, avg_ssim, save_file_name)
     print(f"[INFO] Eval score - PSNR: {avg_psnr:.4f}, SSIM: {avg_ssim:.4f}\n")
     
-    save_path = f"results/figure/{save_file_name}.png"
+    save_path = f"results/figures/{save_file_name}.png"
     save_test_figure(images, noisy_images, denoised_images, save_path=save_path ,num_images=3)
     
     return avg_psnr, avg_ssim

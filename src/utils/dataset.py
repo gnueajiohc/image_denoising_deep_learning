@@ -2,7 +2,7 @@ import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 from torch.utils.data import DataLoader
 
-def get_dataloader(dataset="CIFAR10", batch_size=64, train=True):
+def get_dataloader(dataset="CIFAR10", batch_size=64, train=True, shuffle=True):
     """
     Get train_loader, test_loader from the given dataset
     
@@ -20,10 +20,10 @@ def get_dataloader(dataset="CIFAR10", batch_size=64, train=True):
     ])
     
     if dataset.upper() == "CIFAR10":
-        dataset = datasets.CIFAR10(root="./data", train=train, transform=transform, download=True)
+        dataset = datasets.CIFAR10(root="./data", train=train, transform=transform, download=True, shuffle=shuffle)
     elif dataset.upper() == "STL10":
         split = "train" if train else "test"
-        dataset = datasets.STL10(root="./data", split=split, transform=transform, download=True)
+        dataset = datasets.STL10(root="./data", split=split, transform=transform, download=True, shuffle=shuffle)
     # Here, you can add whichever dataset you want
     else:
         raise ValueError(f"Not available dataset.")
@@ -34,8 +34,8 @@ def get_dataloader(dataset="CIFAR10", batch_size=64, train=True):
 
 def get_train_loader(dataset="CIFAR10", batch_size=64):
     """wrapper function for making train dataloader"""
-    return get_dataloader(dataset=dataset, batch_size=batch_size, train=True)
+    return get_dataloader(dataset=dataset, batch_size=batch_size, train=True, shuffle=True)
 
 def get_test_loader(dataset="CIFAR10", batch_size=64):
     """wrapper function for making test dataloader"""
-    return get_dataloader(dataset=dataset, batch_size=batch_size, train=False)
+    return get_dataloader(dataset=dataset, batch_size=batch_size, train=False, shuffle=False)

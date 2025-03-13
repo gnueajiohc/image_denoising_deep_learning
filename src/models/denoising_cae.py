@@ -77,7 +77,7 @@ class DenoisingCAE(nn.Module):
         layers = [
             nn.ConvTranspose2d(in_channels, out_channels, kernel_size=kernel_size, stride=2,padding=kernel_size // 2, output_padding=1, bias=not use_batchnorm),
             nn.ReLU(inplace=True),
-            nn.ConvTranspose2d(in_channels, out_channels, kernel_size=kernel_size, stride=2,padding=kernel_size // 2, output_padding=1, bias=not use_batchnorm),
+            nn.Conv2d(out_channels, out_channels, kernel_size=kernel_size, stride=1, padding=kernel_size // 2, bias=not use_batchnorm),
             nn.ReLU(inplace=True)
         ]
         if use_batchnorm:
