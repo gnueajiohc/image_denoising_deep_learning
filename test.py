@@ -1,4 +1,5 @@
 import argparse
+import time
 import torch
 from utils import psnr, ssim
 from utils import get_test_loader
@@ -18,6 +19,8 @@ def test_model(model, test_loader, dataset, device="cpu"):
     print("[TESTING]".center(30, '-'))
     print("")
     
+    start_time = time.time()
+    
     with torch.no_grad():
         for images, _ in test_loader:
             images = images.to(device)
@@ -31,6 +34,9 @@ def test_model(model, test_loader, dataset, device="cpu"):
             total_psnr += psnr_value.item()
             total_ssim += ssim_value.item()
             num_samples += 1
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    print(f"[INFO] Total training time: {elapsed_time:.2f} seconds")
     
     avg_psnr = total_psnr / num_samples
     avg_ssim = total_ssim / num_samples
@@ -55,7 +61,7 @@ def main(model_name, dataset, batch_size):
         print(f"[ERROR] Model file not found: {model_path}. You should train the model first.\n")
         return
     
-    print_model_info(model_name, dataset)
+    print_model_info(model_name, model, dataset)
     
     test_model(model, test_loader, dataset=dataset, device=device)
 

@@ -1,5 +1,6 @@
 import os
 import argparse
+import time
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -13,7 +14,10 @@ def train_model(model, train_loader, save_name, epochs=10, lr=1e-3, device="cpu"
     optimizer = optim.Adam(model.parameters(), lr=lr)
     criterion = nn.MSELoss()
     
-    print("[TRAINING]\n".center(30, '-'))
+    print("[TRAINING]".center(30, '-'))
+    print("")
+    
+    start_time = time.time()
     
     for epoch in range(epochs):
         model.train()
@@ -32,7 +36,10 @@ def train_model(model, train_loader, save_name, epochs=10, lr=1e-3, device="cpu"
             total_loss += loss.item()
         
         avg_loss = total_loss / len(train_loader)
-        print(f"[Epoch {epoch + 1} of {epochs}] Loss: {avg_loss:.4f}")
+        print(f"[Epoch {epoch + 1} of {epochs}] Loss: {avg_loss:.5f}")
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    print(f"[INFO] Total training time: {elapsed_time:.2f} seconds")
     
     save_dir = "results"
     os.makedirs(save_dir, exist_ok=True)
@@ -46,7 +53,7 @@ def main(model_name, dataset, epochs, batch_size, lr):
     
     model = select_model(model_name)
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    print_model_info(model_name, dataset)
+    print_model_info(model_name, model, dataset)
     
     save_name = f"{model.__class__.__name__}_{dataset}"
     train_model(model, train_loader, save_name=save_name, epochs=epochs, lr=lr, device=device)

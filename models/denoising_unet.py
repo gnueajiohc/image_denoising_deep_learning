@@ -52,10 +52,9 @@ class DenoisingUNet(nn.Module):
         self.up_convs = nn.Sequential(*up_convs)
         self.up_blocks = nn.Sequential(*up_blocks)
         
-        self.final_conv = nn.Conv2d(
-            in_channels=current_in_channels,  # 최종 up_block의 출력 채널 (16)
-            out_channels=in_channels,         # 3 채널로 복원
-            kernel_size=1
+        self.final_conv = nn.Sequential(
+            nn.Conv2d(in_channels=current_in_channels,out_channels=in_channels,kernel_size=1),
+            nn.Sigmoid()
         )
         
     def up_conv(self, in_channels, out_channels):
