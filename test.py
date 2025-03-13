@@ -4,8 +4,9 @@ import torch
 from utils import psnr, ssim
 from utils import get_test_loader
 from utils import add_noise
-from utils import save_results
+from utils import save_test_figure
 from utils import print_model_info
+from utils import save_test_score
 from models import select_model
 
 def test_model(model, test_loader, dataset, device="cpu"):
@@ -36,15 +37,17 @@ def test_model(model, test_loader, dataset, device="cpu"):
             num_samples += 1
     end_time = time.time()
     elapsed_time = end_time - start_time
-    print(f"[INFO] Total training time: {elapsed_time:.2f} seconds")
+    print(f"[INFO] Total test time: {elapsed_time:.2f} seconds")
     
     avg_psnr = total_psnr / num_samples
     avg_ssim = total_ssim / num_samples
     
+    save_file_name = f"{model.__class__.__name__}_{dataset}"
+    save_test_score(avg_psnr, avg_ssim, save_file_name)
     print(f"[INFO] Eval score - PSNR: {avg_psnr:.4f}, SSIM: {avg_ssim:.4f}\n")
     
-    save_path = f"results/test/{model.__class__.__name__}_{dataset}"
-    save_results(images, noisy_images, denoised_images, save_path=save_path ,num_images=3)
+    save_path = f"results/figure/{save_file_name}.png"
+    save_test_figure(images, noisy_images, denoised_images, save_path=save_path ,num_images=3)
     
     return avg_psnr, avg_ssim
 

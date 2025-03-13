@@ -23,7 +23,7 @@ def add_noise(image, noise_level=0.2, sp_prob=0.05):
 import matplotlib.pyplot as plt
 import torch
 
-def save_results(original, noisy, denoised, save_path, num_images=3):
+def save_test_figure(original, noisy, denoised, save_path, num_images=3):
     """
     Displays and saves up to 'num_images' rows of images, each row containing
     (Original, Noisy, Denoised) side by side.
@@ -63,3 +63,7 @@ def save_results(original, noisy, denoised, save_path, num_images=3):
     plt.tight_layout()
     plt.savefig(save_path)
     plt.close()
+
+def save_test_score(psnr, ssim, save_file_name):
+    with open(f"result/score/{save_file_name}", "w") as f:
+        f.write(f"[INFO] Eval score - PSNR: {psnr:.4f}, SSIM: {ssim:.4f}\n")
