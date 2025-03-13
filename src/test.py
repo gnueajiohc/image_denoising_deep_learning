@@ -17,7 +17,7 @@ def test_model(model, test_loader, dataset, device="cpu"):
     total_ssim = 0.0
     num_samples = 0
     
-    print("[TESTING]".center(30, '-'))
+    print("[TESTING]".center(50, '-'))
     print("")
     
     start_time = time.time()

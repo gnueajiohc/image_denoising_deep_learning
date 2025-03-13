@@ -14,7 +14,7 @@ def train_model(model, train_loader, save_name, epochs=10, lr=1e-3, device="cpu"
     optimizer = optim.Adam(model.parameters(), lr=lr)
     criterion = nn.MSELoss()
     
-    print("[TRAINING]".center(30, '-'))
+    print("[TRAINING]".center(50, '-'))
     print("")
     
     start_time = time.time()
@@ -39,14 +39,14 @@ def train_model(model, train_loader, save_name, epochs=10, lr=1e-3, device="cpu"
         print(f"[Epoch {epoch + 1} of {epochs}] Loss: {avg_loss:.5f}")
     end_time = time.time()
     elapsed_time = end_time - start_time
-    print(f"[INFO] Total training time: {elapsed_time:.2f} seconds")
+    print(f"\n[INFO] Total training time: {elapsed_time:.2f} seconds")
     
     save_dir = "results"
     os.makedirs(save_dir, exist_ok=True)
     model_path = f"results/weights/{save_name}.pth"
     torch.save(model.state_dict(), model_path)
     
-    print(f"\n[INFO] Model saved at {model_path}\n")
+    print(f"[INFO] Model saved at {model_path}\n")
 
 def main(model_name, dataset, epochs, batch_size, lr):
     train_loader = get_train_loader(dataset=dataset, batch_size=batch_size)

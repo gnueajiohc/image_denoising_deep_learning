@@ -1,6 +1,5 @@
 import torch
 import matplotlib.pyplot as plt
-import torchvision.utils as vutils
 
 def print_model_info(model_name, model, dataset):
     print("[MODEL INFO]".center(50, '-'))
