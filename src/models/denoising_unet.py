@@ -61,7 +61,7 @@ class DenoisingUNet(nn.Module):
         
         # final layer with sigmoid
         self.final_conv = nn.Sequential(
-            nn.Conv2d(in_channels=current_in_channels,out_channels=in_channels,kernel_size=1),
+            nn.Conv2d(in_channels=current_in_channels, out_channels=in_channels, kernel_size=1, bias=not use_batchnorm),
             nn.Sigmoid()
         )
     
@@ -72,9 +72,9 @@ class DenoisingUNet(nn.Module):
     def conv_block(self, in_channels, out_channels, use_batchnorm):
         """convultional block from 'in_channels' to 'out_channels'"""
         layers = [
-            nn.Conv2d(in_channels, out_channels, kernel_size=3, stride=1, padding=1),
+            nn.Conv2d(in_channels, out_channels, kernel_size=3, stride=1, padding=1, bias=not use_batchnorm),
             nn.ReLU(inplace=True),
-            nn.Conv2d(out_channels, out_channels, kernel_size=3, stride=1, padding=1),
+            nn.Conv2d(out_channels, out_channels, kernel_size=3, stride=1, padding=1, bias=not use_batchnorm),
             nn.ReLU(inplace=True)
         ]
         if use_batchnorm:

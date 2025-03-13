@@ -61,9 +61,9 @@ class DenoisingCAE(nn.Module):
     def encoding_conv_block(self, in_channels, out_channels, kernel_size, use_batchnorm):
         """encoding convolution block function from 'in_channels' to 'out_channels'"""
         layers = [
-            nn.Conv2d(in_channels, out_channels, kernel_size=kernel_size, stride=2, padding=kernel_size // 2),
+            nn.Conv2d(in_channels, out_channels, kernel_size=kernel_size, stride=2, padding=kernel_size // 2, bias=not use_batchnorm),
             nn.ReLU(inplace=True),
-            nn.Conv2d(out_channels, out_channels, kernel_size=kernel_size, stride=1, padding=kernel_size // 2),
+            nn.Conv2d(out_channels, out_channels, kernel_size=kernel_size, stride=1, padding=kernel_size // 2, bias=not use_batchnorm),
             nn.ReLU(inplace=True)
         ]
         if use_batchnorm:
@@ -75,9 +75,9 @@ class DenoisingCAE(nn.Module):
     def decoding_conv_block(self, in_channels, out_channels, kernel_size, use_batchnorm):
         """decoding convolution block function from 'in_channels' to 'out_channels'"""
         layers = [
-            nn.ConvTranspose2d(in_channels, out_channels, kernel_size=kernel_size, stride=2,padding=kernel_size // 2, output_padding=1),
+            nn.ConvTranspose2d(in_channels, out_channels, kernel_size=kernel_size, stride=2,padding=kernel_size // 2, output_padding=1, bias=not use_batchnorm),
             nn.ReLU(inplace=True),
-            nn.ConvTranspose2d(in_channels, out_channels, kernel_size=kernel_size, stride=2,padding=kernel_size // 2, output_padding=1),
+            nn.ConvTranspose2d(in_channels, out_channels, kernel_size=kernel_size, stride=2,padding=kernel_size // 2, output_padding=1, bias=not use_batchnorm),
             nn.ReLU(inplace=True)
         ]
         if use_batchnorm:

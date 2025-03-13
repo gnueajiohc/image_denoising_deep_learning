@@ -1,8 +1,8 @@
 # Deep Learning based Image Denoising Models
 
-## Overview
+## About the project
 
-## Project structure
+### Project structure
 ```
 .
 ├── src/
@@ -22,8 +22,10 @@
 ├── README.md
 └── requirements.txt
 ```
-## Process
+## Getting started
 
-## Results
+## Experiment
 
-## How to run
+### Procedure
+
+### Results

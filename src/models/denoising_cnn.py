@@ -31,7 +31,8 @@ class DenoisingCNN(nn.Module):
                                     current_out_channels,
                                     kernel_size=kernel_size,
                                     stride=1,
-                                    padding=kernel_size // 2))
+                                    padding=kernel_size // 2,
+                                    bias=not use_batchnorm))
             if use_batchnorm:
                 layers.append(nn.BatchNorm2d(current_out_channels))
             layers.append(nn.ReLU(inplace=True))
@@ -43,7 +44,8 @@ class DenoisingCNN(nn.Module):
                                 in_channels,
                                 kernel_size=kernel_size,
                                 stride=1,
-                                padding=kernel_size // 2))
+                                padding=kernel_size // 2,
+                                bias=not use_batchnorm))
         layers.append(nn.Sigmoid())
         
         self.net = nn.Sequential(*layers)
