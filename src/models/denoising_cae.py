@@ -1,4 +1,3 @@
-import torch
 import torch.nn as nn
 
 # -----------------------------------
@@ -23,33 +22,32 @@ class DenoisingCAE(nn.Module):
     ):
         super(DenoisingCAE, self).__init__()
         
+        # list for encoding conv blocks
         encoders = []
         current_in_channels = in_channels
         
         for current_out_channels in hidden_channels:
-            encoders.append(self.conv_block(in_channels=current_in_channels,
+            encoders.append(self.encoding_conv_block(in_channels=current_in_channels,
                                             out_channels=current_out_channels,
                                             kernel_size=kernel_size,
                                             use_batchnorm=use_batchnorm))
             current_in_channels = current_out_channels
         
         self.encoder = nn.Sequential(*encoders)
+        
+        # list for decoding conv blocks
         decoders = []
         reversed_channels = list(reversed(hidden_channels))
         
         for current_out_channels in reversed_channels[1:]:
-            decoders.append(nn.ConvTranspose2d(current_in_channels,
-                                               current_out_channels,
+            decoders.append(self.decoding_conv_block(in_channels=current_in_channels,
+                                               out_channels=current_out_channels,
                                                kernel_size=kernel_size,
-                                               stride=2,
-                                               padding=kernel_size // 2,
-                                               output_padding=1))
-            if use_batchnorm:
-                decoders.append(nn.BatchNorm2d(current_out_channels))
-            decoders.append(nn.ReLU(inplace=True))
+                                               use_batchnorm=use_batchnorm))
             
             current_in_channels = current_out_channels
         
+        # final layer with sigmoid
         decoders.append(nn.ConvTranspose2d(in_channels=current_in_channels,
                                            out_channels=in_channels,
                                            kernel_size=kernel_size,
@@ -60,11 +58,26 @@ class DenoisingCAE(nn.Module):
         
         self.decoder = nn.Sequential(*decoders)
     
-    def conv_block(self, in_channels, out_channels, kernel_size, use_batchnorm):
+    def encoding_conv_block(self, in_channels, out_channels, kernel_size, use_batchnorm):
+        """encoding convolution block function from 'in_channels' to 'out_channels'"""
         layers = [
-            nn.Conv2d(in_channels, out_channels, kernel_size=kernel_size, stride=2, padding=1),
+            nn.Conv2d(in_channels, out_channels, kernel_size=kernel_size, stride=2, padding=kernel_size // 2),
             nn.ReLU(inplace=True),
-            nn.Conv2d(out_channels, out_channels, kernel_size=kernel_size, stride=1, padding=1),
+            nn.Conv2d(out_channels, out_channels, kernel_size=kernel_size, stride=1, padding=kernel_size // 2),
+            nn.ReLU(inplace=True)
+        ]
+        if use_batchnorm:
+            layers.insert(1,nn.BatchNorm2d(out_channels))
+            layers.insert(-1,nn.BatchNorm2d(out_channels))
+            
+        return nn.Sequential(*layers)
+
+    def decoding_conv_block(self, in_channels, out_channels, kernel_size, use_batchnorm):
+        """decoding convolution block function from 'in_channels' to 'out_channels'"""
+        layers = [
+            nn.ConvTranspose2d(in_channels, out_channels, kernel_size=kernel_size, stride=2,padding=kernel_size // 2, output_padding=1),
+            nn.ReLU(inplace=True),
+            nn.ConvTranspose2d(in_channels, out_channels, kernel_size=kernel_size, stride=2,padding=kernel_size // 2, output_padding=1),
             nn.ReLU(inplace=True)
         ]
         if use_batchnorm:
@@ -74,6 +87,7 @@ class DenoisingCAE(nn.Module):
         return nn.Sequential(*layers)
     
     def forward(self, x):
+        """forward propagation function"""
         encoded = self.encoder(x)
         decoded = self.decoder(encoded)
         return decoded

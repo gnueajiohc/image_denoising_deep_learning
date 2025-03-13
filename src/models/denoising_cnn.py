@@ -1,4 +1,3 @@
-import torch
 import torch.nn as nn
 
 # -----------------------------------
@@ -23,6 +22,7 @@ class DenoisingCNN(nn.Module):
     ):
         super(DenoisingCNN, self).__init__()
         
+        # list for hidden convolution layers
         layers = []
         current_in_channels = in_channels
         
@@ -38,6 +38,7 @@ class DenoisingCNN(nn.Module):
             
             current_in_channels = current_out_channels
         
+        # final layer with sigmoid
         layers.append(nn.Conv2d(current_in_channels,
                                 in_channels,
                                 kernel_size=kernel_size,
@@ -46,6 +47,7 @@ class DenoisingCNN(nn.Module):
         layers.append(nn.Sigmoid())
         
         self.net = nn.Sequential(*layers)
-    
+        
     def forward(self, x):
+        """forward propagation function"""
         return self.net(x)

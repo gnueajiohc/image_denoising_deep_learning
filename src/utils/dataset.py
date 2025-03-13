@@ -24,7 +24,7 @@ def get_dataloader(dataset="CIFAR10", batch_size=64, train=True):
     elif dataset.upper() == "STL10":
         split = "train" if train else "test"
         dataset = datasets.STL10(root="./data", split=split, transform=transform, download=True)
-    # Here, you can add whatever dataset you want
+    # Here, you can add whichever dataset you want
     else:
         raise ValueError(f"Not available dataset.")
     
@@ -33,7 +33,9 @@ def get_dataloader(dataset="CIFAR10", batch_size=64, train=True):
     return dataloader
 
 def get_train_loader(dataset="CIFAR10", batch_size=64):
+    """wrapper function for making train dataloader"""
     return get_dataloader(dataset=dataset, batch_size=batch_size, train=True)
 
 def get_test_loader(dataset="CIFAR10", batch_size=64):
+    """wrapper function for making test dataloader"""
     return get_dataloader(dataset=dataset, batch_size=batch_size, train=False)

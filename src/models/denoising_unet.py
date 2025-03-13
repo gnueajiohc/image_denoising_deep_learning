@@ -22,6 +22,7 @@ class DenoisingUNet(nn.Module):
     ):
         super(DenoisingUNet, self).__init__()
         
+        # list for down blocks
         down_blocks = []
         current_in_channels = in_channels
         
@@ -32,19 +33,25 @@ class DenoisingUNet(nn.Module):
             current_in_channels = current_out_channels
         self.down_blocks = nn.Sequential(*down_blocks)
         
+        # bottleneck block makes channel size double
         self.bottleneck = self.conv_block(current_in_channels,
                                           2 * current_in_channels,
                                           use_batchnorm=use_batchnorm)
-        current_in_channels *= 2 #128
+        current_in_channels *= 2
+        
+        # up_convs for upside convolution
         up_convs = []
+        # up_blocks for up blocks
         up_blocks = []
+        # reverse hidden_channels to go upside down
         reversed_channels = list(reversed(hidden_channels))
         
-        for current_out_channels in reversed_channels:#[64,32,16]
+        for current_out_channels in reversed_channels:
             up_convs.append(self.up_conv(in_channels=current_in_channels,
                                          out_channels=current_out_channels))
             
-            current_in_channels = current_out_channels * 2 # after cocatenate
+            # after concatenating, channel size will be double (check forward function)
+            current_in_channels = current_out_channels * 2
             up_blocks.append(self.conv_block(in_channels=current_in_channels,
                                              out_channels=current_out_channels,
                                              use_batchnorm=use_batchnorm))
@@ -52,15 +59,18 @@ class DenoisingUNet(nn.Module):
         self.up_convs = nn.Sequential(*up_convs)
         self.up_blocks = nn.Sequential(*up_blocks)
         
+        # final layer with sigmoid
         self.final_conv = nn.Sequential(
             nn.Conv2d(in_channels=current_in_channels,out_channels=in_channels,kernel_size=1),
             nn.Sigmoid()
         )
-        
+    
     def up_conv(self, in_channels, out_channels):
+        """upside conv layer from 'in_channels' to 'out_channels' with stride=2"""
         return nn.ConvTranspose2d(in_channels, out_channels, kernel_size=2, stride=2)
-        
+    
     def conv_block(self, in_channels, out_channels, use_batchnorm):
+        """convultional block from 'in_channels' to 'out_channels'"""
         layers = [
             nn.Conv2d(in_channels, out_channels, kernel_size=3, stride=1, padding=1),
             nn.ReLU(inplace=True),
@@ -74,18 +84,23 @@ class DenoisingUNet(nn.Module):
         return nn.Sequential(*layers)
     
     def forward(self, x):
+        """forward propagation function"""
+        # down
         skip_connections = []
         for down_block in self.down_blocks:
             x = down_block(x)
+            # for concatenate
             skip_connections.append(x)
             x = F.max_pool2d(x, kernel_size=2, stride=2)
         
+        # bottleneck
         x = self.bottleneck(x)
-        
         skip_connections = skip_connections[::-1]
         
+        # up
         for i in range(len(self.up_convs)):
             x = self.up_convs[i](x)
+            # concatenate
             x = torch.cat([x, skip_connections[i]], dim=1)
             x = self.up_blocks[i](x)
         

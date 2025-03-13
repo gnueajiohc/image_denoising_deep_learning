@@ -2,16 +2,20 @@ import torch
 import matplotlib.pyplot as plt
 
 def print_model_info(model_name, model, dataset):
+    """print model name, dataset, number of parameters"""
     print("[MODEL INFO]".center(50, '-'))
     print(f"\nModel: {model_name.upper()}")
     print(f"Dataset: {dataset}")
     print(f"Parameters: {sum(p.numel() for p in model.parameters() if p.requires_grad)}\n")
 
 def add_noise(image, noise_level=0.2, sp_prob=0.05):
+    """add Gaussian or Salt & Pepper noise to 'image'"""
+    # add Gaussian noise
     noise = noise_level * torch.randn_like(image)
     noisy_image = image + noise
     noisy_image = torch.clamp(noisy_image, 0.0, 1.0)
     
+    # add salt & pepper noise
     # noise = torch.rand_like(image)
     # salt = (noise > 1 - sp_prob).float()
     # pepper = (noise < sp_prob).float()
@@ -25,11 +29,11 @@ def save_test_figure(original, noisy, denoised, save_path, num_images=3):
     (Original, Noisy, Denoised) side by side.
 
     Args:
-        original (torch.Tensor): A collection of original images [D, C, H, W].
-        noisy (torch.Tensor): A collection of noisy images [D, C, H, W].
-        denoised (torch.Tensor): A collection of denoised images [D, C, H, W].
-        save_path (str): The path (including filename) where the plot will be saved.
-        num_images (int): Number of image triplets (Original, Noisy, Denoised) to display and save.
+        original (torch.Tensor): A collection of original images [D, C, H, W]
+        noisy (torch.Tensor): A collection of noisy images [D, C, H, W]
+        denoised (torch.Tensor): A collection of denoised images [D, C, H, W]
+        save_path (str): The path (including filename) where the plot will be saved
+        num_images (int): Number of image triplets (Original, Noisy, Denoised) to display and save
     """
 
     num_images = min(num_images, original.shape[0])
@@ -54,5 +58,6 @@ def save_test_figure(original, noisy, denoised, save_path, num_images=3):
     plt.close()
 
 def save_test_score(psnr, ssim, save_file_name):
+    """save psnr, ssim score in 'save_file_name'"""
     with open(f"results/score/{save_file_name}", "w") as f:
         f.write(f"[INFO] Eval score - PSNR: {psnr:.4f}, SSIM: {ssim:.4f}\n")

@@ -10,6 +10,15 @@ from utils import save_test_score
 from models import select_model
 
 def test_model(model, test_loader, dataset, device="cpu"):
+    """
+    Test 'model' with given dataloader and save it"
+    
+    Args:
+        model (nn.Module): image denoising model class
+        test_loader (DataLoader): dataloader from dataset
+        dataset (str): dataset name
+        device (str): cpu or cuda
+    """
     model.to(device)
     model.eval()
     
@@ -20,21 +29,24 @@ def test_model(model, test_loader, dataset, device="cpu"):
     print("[TESTING]".center(50, '-'))
     print("")
     
+    # record test start time
     start_time = time.time()
     
     with torch.no_grad():
         for images, _ in test_loader:
             images = images.to(device)
-            noisy_images = add_noise(images)
+            noisy_images = add_noise(images) # add noise
             
-            denoised_images = model(noisy_images)
+            denoised_images = model(noisy_images) # forward propagation
             
-            psnr_value = psnr(denoised_images, images)
-            ssim_value = ssim(denoised_images, images)
+            psnr_value = psnr(denoised_images, images) # compute PSNR
+            ssim_value = ssim(denoised_images, images) # compute SSIM
             
             total_psnr += psnr_value.item()
             total_ssim += ssim_value.item()
             num_samples += 1
+    
+    # calculating testing time
     end_time = time.time()
     elapsed_time = end_time - start_time
     print(f"[INFO] Total test time: {elapsed_time:.2f} seconds")
@@ -42,6 +54,7 @@ def test_model(model, test_loader, dataset, device="cpu"):
     avg_psnr = total_psnr / num_samples
     avg_ssim = total_ssim / num_samples
     
+    # save test results
     save_file_name = f"{model.__class__.__name__}_{dataset}"
     save_test_score(avg_psnr, avg_ssim, save_file_name)
     print(f"[INFO] Eval score - PSNR: {avg_psnr:.4f}, SSIM: {avg_ssim:.4f}\n")
@@ -51,10 +64,17 @@ def test_model(model, test_loader, dataset, device="cpu"):
     
     return avg_psnr, avg_ssim
 
-def main(model_name, dataset, batch_size):
+def main(model_name, dataset, batch_size, use_batchnorm):
+    """
+    Args:
+        model_name (str): name of image denoising model class
+        dataset (str): name of dataset
+        batch_size (int): batch size of datatset
+        use_batchnorm (bool): use batch normalization or not
+    """
     test_loader = get_test_loader(dataset=dataset, batch_size=batch_size)
     
-    model = select_model(model_name)
+    model = select_model(model_name, use_batchnorm)
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model_path = f"results/weights/{model.__class__.__name__}_{dataset}.pth"
     try:
@@ -74,7 +94,8 @@ if __name__=="__main__":
     parser.add_argument("--model_name", type=str, default="cnn", help="Name of the model (default: cnn)")
     parser.add_argument("--dataset", type=str, default="CIFAR10", help="Name of the dataset (default: CIFAR10)")
     parser.add_argument("--batch_size", type=int, default=64, help="Batch size for testing (default: 64)")
+    parser.add_argument("--use_batchnorm", type=bool, default=False, help="Use batch normalization or not (default: False)")
     
     args = parser.parse_args()
     
-    main(model_name=args.model_name, dataset=args.dataset, batch_size=args.batch_size)
+    main(model_name=args.model_name, dataset=args.dataset, batch_size=args.batch_size, use_batchnorm=args.use_batchnorm)
