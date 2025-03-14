@@ -32,12 +32,14 @@ class DenoisingUNet(nn.Module):
                                                use_batchnorm=use_batchnorm))
             current_in_channels = current_out_channels
         self.down_blocks = nn.Sequential(*down_blocks)
+        # after encoder, STL10 image (3 x 96 x 96) -> (128 x 6 x 6)
         
         # bottleneck block makes channel size double
         self.bottleneck = self.conv_block(current_in_channels,
                                           2 * current_in_channels,
                                           use_batchnorm=use_batchnorm)
         current_in_channels *= 2
+        # after bottleneck, STL10 image (3 x 96 x 96) -> (128 x 6 x 6)
         
         # up_convs for upside convolution
         up_convs = []

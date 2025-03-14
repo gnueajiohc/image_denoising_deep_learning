@@ -8,7 +8,7 @@ import torch.optim as optim
 from utils import get_train_loader, get_test_loader
 from utils import add_noise
 from utils import print_model_info
-from models import ResNet
+from models import ClassifyingResNet, ClassifyingCNN
 
 def train_cls_model(model, train_loader, test_loader, save_name, epochs=10, lr=1e-3, device="cpu"):
     """
@@ -25,7 +25,7 @@ def train_cls_model(model, train_loader, test_loader, save_name, epochs=10, lr=1
     # use Adam optimizer and MSE loss function
     model.to(device)
     optimizer = optim.Adam(model.parameters(), lr=lr)
-    criterion = nn.MSELoss()
+    criterion = nn.CrossEntropyLoss()
     
     print("[TRAINING]".center(50, '-'))
     print("")
@@ -40,7 +40,7 @@ def train_cls_model(model, train_loader, test_loader, save_name, epochs=10, lr=1
         for images, labels in train_loader:
             images = images.to(device)
             images = add_noise(images)
-            labels = F.one_hot(labels, num_classes=10).float().to(device) # one-got encoding
+            labels = labels.to(device)
             
             optimizer.zero_grad()
             outputs = model(images) # forward propagation
@@ -67,7 +67,7 @@ def train_cls_model(model, train_loader, test_loader, save_name, epochs=10, lr=1
     print("[TESTING]".center(50, '-'))
     print("")
     
-    total_loss = 0
+    correct_answers = 0
     num_samples = 0
     
     # record test start time
@@ -77,24 +77,23 @@ def train_cls_model(model, train_loader, test_loader, save_name, epochs=10, lr=1
         for images, labels in test_loader:
             images = images.to(device)
             images = add_noise(images)
-            labels = F.one_hot(labels, num_classes=10).float().to(device) # one-got encoding
+            labels = labels.to(device)
             
             outputs = model(images) # forward propagation
-            
-            loss = criterion(outputs, labels) # compute loss
-            
-            total_loss += loss.item()
-            num_samples += 1
+            predicts = torch.argmax(outputs, dim=1)
+
+            correct_answers += (predicts == labels).sum().item()
+            num_samples += images.shape[0]
     
     # calculating testing time
     end_time = time.time()
     elapsed_time = end_time - start_time
     print(f"[INFO] Total test time: {elapsed_time:.2f} seconds")
     
-    avg_loss = total_loss / num_samples
-    print(f"[INFO] Eval score - MSE: {avg_loss:.4f}\n")
+    correct_ratio = correct_answers / num_samples
+    print(f"[INFO] Eval score - Correct: {correct_ratio:.4f}\n")
 
-def main(dataset, epochs, batch_size, lr, use_batchnorm):
+def main(model_name, dataset, epochs, batch_size, lr, use_batchnorm):
     """
     Args:
         model_name (str): name of image denoising model class
@@ -107,22 +106,30 @@ def main(dataset, epochs, batch_size, lr, use_batchnorm):
     train_loader = get_train_loader(dataset=dataset, batch_size=batch_size)
     test_loader = get_test_loader(dataset=dataset, batch_size=batch_size)
     
-    model = ResNet(use_batchnorm=use_batchnorm)
+    model = ClassifyingResNet(use_batchnorm=use_batchnorm)
     device = "cuda" if torch.cuda.is_available() else "cpu"
     print_model_info("ResNet", model, dataset)
     
     save_name = f"{model.__class__.__name__}_{dataset}"
     train_cls_model(model, train_loader, test_loader, save_name=save_name, epochs=epochs, lr=lr, device=device) # training model
-    
-if __name__=="__main__":
-    parser = argparse.ArgumentParser(description="Denoising model trainer")
 
-    parser.add_argument("--dataset", type=str, default="CIFAR10", help="Name of the dataset (default: CIFAR10)")
+    model = ClassifyingCNN(use_batchnorm=use_batchnorm)
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    print_model_info("ResNet", model, dataset)
+    
+    save_name = f"{model.__class__.__name__}_{dataset}"
+    train_cls_model(model, train_loader, test_loader, save_name=save_name, epochs=epochs, lr=lr, device=device)
+  
+if __name__=="__main__":
+    parser = argparse.ArgumentParser(description="Classifier model trainer")
+
+    parser.add_argument("--model_name", type=str, default="cnn", help="Name of the model (default: cnn)")
+    parser.add_argument("--dataset", type=str, default="STL10", help="Name of the dataset (default: STL10)")
     parser.add_argument("--epochs", type=int, default=10, help="Num of Epochs for training (default: 10)")
     parser.add_argument("--batch_size", type=int, default=64, help="Batch size for training (default: 64)")
     parser.add_argument("--lr", type=float, default=1e-3, help="Learning rate for training (default: 1e-3)")
-    parser.add_argument("--use_batchnorm", action="store_true", help="Use batch normalization or not (default: False)")
+    parser.add_argument("--use_batchnorm", action="store_true", help="Use batch normalization or not")
     
     args = parser.parse_args()
     
-    main(dataset=args.dataset, epochs=args.epochs, batch_size=args.batch_size, lr=args.lr, use_batchnorm=args.use_batchnorm)
+    main(model_name=args.model_name, dataset=args.dataset, epochs=args.epochs, batch_size=args.batch_size, lr=args.lr, use_batchnorm=args.use_batchnorm)

@@ -41,7 +41,7 @@ class BasicBlock(nn.Module):
         conv_block2.append(nn.Conv2d(out_channels,
                                      out_channels,
                                      kernel_size=kernel_size,
-                                     stride=stride,
+                                     stride=1,
                                      padding=kernel_size // 2,
                                      bias=not use_batchnorm))
         self.conv2 = nn.Sequential(*conv_block2)
@@ -51,22 +51,22 @@ class BasicBlock(nn.Module):
         
         # Skip connection: if channel sizes differ, we need a 1x1 conv
         self.shortcut = nn.Sequential()
-        if in_channels != out_channels:
+        if (stride != 1) or (in_channels != out_channels):
             shortcut_layers = [
                 nn.Conv2d(in_channels, out_channels,
-                          kernel_size=1, bias=False)
+                          kernel_size=1, stride=stride, bias=False)
             ]
             if use_batchnorm:
                 shortcut_layers.append(nn.BatchNorm2d(out_channels))
             self.shortcut = nn.Sequential(*shortcut_layers)
     
     def forward(self, x):
-        identity = self.shortcut
+        identity = self.shortcut(x)
         
         out = self.conv1(x)
         out = F.relu(out, inplace=True)
         
-        out = self.conv2(x)
+        out = self.conv2(out)
         
         out += identity
         out = F.relu(out, inplace=True)
@@ -74,9 +74,9 @@ class BasicBlock(nn.Module):
         return out
 
 # -----------------------------------
-# ResNet Model class
+# Classifying ResNet Model class
 # -----------------------------------
-class ResNet(nn.Module):
+class ClassifyingResNet(nn.Module):
     """
     Args:
     
@@ -90,7 +90,7 @@ class ResNet(nn.Module):
         strides=[2, 1, 1, 1],
         use_batchnorm=True
     ):
-        super(ResNet, self).__init__()
+        super(ClassifyingResNet, self).__init__()
         
         self.use_batchnorm=use_batchnorm
         
