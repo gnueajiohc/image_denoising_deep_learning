@@ -3,7 +3,7 @@ from .denoising_cae import DenoisingCAE
 from .denoising_unet import DenoisingUNet
 from .classifying_resnet import ClassifyingResNet
 from .classifying_cnn import ClassifyingCNN
-from .class_guided_unet import ClassGuidedUNet
+from .class_guided_unet import ClassGuidedUNet, FEATURE_CHANNELS
 from .load_model import load_model
 
 # dictionary connecting model name to model class
@@ -28,8 +28,8 @@ def select_model(model_name, use_batchnorm):
     if model_name == "cnn_unet":
         classifier = ClassifyingCNN(hidden_channels=[64, 128, 256], use_batchnorm=True)
         load_model(classifier)
-        unet = DenoisingUNet(in_channels=3)
-        model = ClassGuidedUNet(classifier, unet, feature_channels=16)
+        unet = DenoisingUNet(in_channels=3, use_batchnorm=use_batchnorm, feature_channels=FEATURE_CHANNELS)
+        model = ClassGuidedUNet(classifier, unet, feature_channels=FEATURE_CHANNELS)
         
         return model
     

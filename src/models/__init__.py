@@ -6,8 +6,7 @@ from .classifying_cnn import ClassifyingCNN
 from. class_guided_unet import ClassGuidedUNet
 from .model_select import select_model, select_classifier_model
 from .load_model import load_model
-from. forward_prop import forward_prop
 
 __all__ = ["DenoisingCNN", "DenoisingCAE", "DenoisingUNet",
            "ClassifyingResNet", "ClassifyingCNN", "ClassGuidedUNet",
-           "select_model", "select_classifier_model", "load_model", "forward_prop"]
+           "select_model", "select_classifier_model", "load_model"]

@@ -18,7 +18,7 @@ class DenoisingUNet(nn.Module):
         self,
         in_channels=3,
         hidden_channels=[16, 32, 64, 128],
-        use_batchnorm=False,
+        use_batchnorm=True,
         feature_channels=None
     ):
         super(DenoisingUNet, self).__init__()

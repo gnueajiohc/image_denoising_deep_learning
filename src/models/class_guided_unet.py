@@ -16,7 +16,7 @@ class ClassGuidedUNet(nn.Module):
         # classifier output (10) -> (FEATURE_CHANNELS * 12 * 12)
         # Unfortunately, 12 looks like a magic number here...
         # We have 12 because STL10 has width 96 and we have 4 layers with stride 2 as a default in UNet class
-        self.fc = nn.Linear(10, feature_channels=FEATURE_CHANNELS * 12 * 12)
+        self.fc = nn.Linear(10, out_features=feature_channels * 12 * 12)
         
         for param in self.classifier.parameters():
             param.requires_grad = False

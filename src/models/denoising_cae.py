@@ -18,7 +18,7 @@ class DenoisingCAE(nn.Module):
         in_channels=3,
         hidden_channels=[16, 32, 64],
         kernel_size=3,
-        use_batchnorm=False
+        use_batchnorm=True
     ):
         super(DenoisingCAE, self).__init__()
         

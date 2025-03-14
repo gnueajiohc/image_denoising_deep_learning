@@ -8,7 +8,6 @@ from utils import get_train_loader
 from utils import add_noise
 from utils import print_model_info
 from models import select_model
-from models import forward_prop
 
 def train_model(model, train_loader, save_name, epochs=10, lr=1e-3, device="cpu"):
     """
@@ -42,7 +41,7 @@ def train_model(model, train_loader, save_name, epochs=10, lr=1e-3, device="cpu"
             noisy_images = add_noise(images) # add noise
             
             optimizer.zero_grad()
-            outputs = forward_prop(model, noisy_images) # forward propagation
+            outputs = model(noisy_images)
             loss = criterion(outputs, images) # compute loss
             loss.backward() # backward propagation
             optimizer.step() # update model parameters
@@ -92,8 +91,8 @@ if __name__=="__main__":
     parser.add_argument("--epochs", type=int, default=10, help="Num of Epochs for training (default: 10)")
     parser.add_argument("--batch_size", type=int, default=64, help="Batch size for training (default: 64)")
     parser.add_argument("--lr", type=float, default=1e-3, help="Learning rate for training (default: 1e-3)")
-    parser.add_argument("--use_batchnorm", action="store_true", help="Use batch normalization or not")
+    parser.add_argument("--no_batchnorm", action="store_true", help="Not using batch normalization")
     
     args = parser.parse_args()
     
-    main(model_name=args.model_name, dataset=args.dataset, epochs=args.epochs, batch_size=args.batch_size, lr=args.lr, use_batchnorm=args.use_batchnorm)
+    main(model_name=args.model_name, dataset=args.dataset, epochs=args.epochs, batch_size=args.batch_size, lr=args.lr, use_batchnorm=not args.use_batchnorm)
