@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
-from model_select import FEATURE_CHANNELS
+
+FEATURE_CHANNELS = 16
 
 class ClassGuidedUNet(nn.Module):
     def __init__(self, classifier, unet, feature_channels=FEATURE_CHANNELS):

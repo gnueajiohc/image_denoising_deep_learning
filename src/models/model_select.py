@@ -6,7 +6,6 @@ from .classifying_cnn import ClassifyingCNN
 from .class_guided_unet import ClassGuidedUNet
 from .load_model import load_model
 
-FEATURE_CHANNELS = 16
 # dictionary connecting model name to model class
 model_list = {
     "cnn": (DenoisingCNN(hidden_channels=[32, 64, 128, 64, 32], use_batchnorm=False),
