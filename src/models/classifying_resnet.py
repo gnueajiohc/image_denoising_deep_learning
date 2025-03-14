@@ -120,6 +120,7 @@ class ClassifyingResNet(nn.Module):
         self.fc = nn.Linear(block_channels[-1], num_classes)
     
     def _make_layer(self, in_channels, out_channels, block_count, stride):
+        """make ResNet layer from 'in_channels' to 'out_channels'"""
         layers = []
         layers.append(
             BasicBlock(
@@ -142,16 +143,19 @@ class ClassifyingResNet(nn.Module):
         return nn.Sequential(*layers)
 
     def forward(self, x):
+        """forward propagation function"""
         # stem
         x = self.conv_block(x)
         x = self.max_pool(x)
         x = F.relu(x, inplace=True)
         
+        # res layers
         x = self.layer1(x)
         x = self.layer2(x)
         x = self.layer3(x)
         x = self.layer4(x)
         
+        # last part
         x = self.global_pool(x)
         x = torch.flatten(x, 1)
         x = self.fc(x)

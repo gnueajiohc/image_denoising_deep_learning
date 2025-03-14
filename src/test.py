@@ -7,7 +7,7 @@ from utils import add_noise
 from utils import save_test_figure
 from utils import print_model_info
 from utils import save_test_score
-from models import load_model
+from models import load_model, get_model_name
 from models import select_model
 
 def test_model(model, test_loader, dataset, device="cpu"):
@@ -56,11 +56,12 @@ def test_model(model, test_loader, dataset, device="cpu"):
     avg_ssim = total_ssim / num_samples
     
     # save test results
-    save_file_name = f"{model.__class__.__name__}_{dataset}"
-    save_test_score(avg_psnr, avg_ssim, save_file_name)
+    save_name = get_model_name(model, dataset)
+    save_path = f"results/scores/{save_name}.txt"
+    save_test_score(avg_psnr, avg_ssim, save_path)
     print(f"[INFO] Eval score - PSNR: {avg_psnr:.4f}, SSIM: {avg_ssim:.4f}\n")
     
-    save_path = f"results/figures/{save_file_name}.png"
+    save_path = f"results/figures/{save_name}.png"
     save_test_figure(images, noisy_images, denoised_images, save_path=save_path ,num_images=3)
     
     return avg_psnr, avg_ssim
@@ -86,11 +87,11 @@ def main(model_name, dataset, batch_size, use_batchnorm):
 if __name__=="__main__":
     parser = argparse.ArgumentParser(description="Denoising model tester")
     
-    parser.add_argument("--model_name", type=str, default="cnn", help="Name of the model (default: cnn)")
+    parser.add_argument("--model", type=str, default="cnn", help="Name of the model (default: cnn)")
     parser.add_argument("--dataset", type=str, default="STL10", help="Name of the dataset (default: STL10)")
     parser.add_argument("--batch_size", type=int, default=64, help="Batch size for testing (default: 64)")
     parser.add_argument("--no_batchnorm", action="store_true", help="Not using batch normalization")
     
     args = parser.parse_args()
     
-    main(model_name=args.model_name, dataset=args.dataset, batch_size=args.batch_size, use_batchnorm=not args.use_batchnorm)
+    main(model_name=args.model_name, dataset=args.dataset, batch_size=args.batch_size, use_batchnorm=not args.no_batchnorm)

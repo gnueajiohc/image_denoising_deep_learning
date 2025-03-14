@@ -57,7 +57,7 @@ def save_test_figure(original, noisy, denoised, save_path, num_images=3):
     plt.savefig(save_path)
     plt.close()
 
-def save_test_score(psnr, ssim, save_file_name):
-    """save psnr, ssim score in 'save_file_name'"""
-    with open(f"results/scores/{save_file_name}", "w") as f:
+def save_test_score(psnr, ssim, save_path):
+    """save psnr, ssim score in 'save_path'"""
+    with open(save_path, "w") as f:
         f.write(f"[INFO] Eval score - PSNR: {psnr:.4f}, SSIM: {ssim:.4f}\n")

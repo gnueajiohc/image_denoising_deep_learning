@@ -7,7 +7,7 @@ import torch.optim as optim
 from utils import get_train_loader
 from utils import add_noise
 from utils import print_model_info
-from models import select_model
+from models import select_model, get_model_name
 
 def train_model(model, train_loader, save_name, epochs=10, lr=1e-3, device="cpu"):
     """
@@ -41,7 +41,7 @@ def train_model(model, train_loader, save_name, epochs=10, lr=1e-3, device="cpu"
             noisy_images = add_noise(images) # add noise
             
             optimizer.zero_grad()
-            outputs = model(noisy_images)
+            outputs = model(noisy_images) # forward propagation
             loss = criterion(outputs, images) # compute loss
             loss.backward() # backward propagation
             optimizer.step() # update model parameters
@@ -80,13 +80,13 @@ def main(model_name, dataset, epochs, batch_size, lr, use_batchnorm):
     device = "cuda" if torch.cuda.is_available() else "cpu"
     print_model_info(model_name, model, dataset)
     
-    save_name = f"{model.__class__.__name__}_{dataset}"
+    save_name = get_model_name(model, dataset)
     train_model(model, train_loader, save_name=save_name, epochs=epochs, lr=lr, device=device) # training model
     
 if __name__=="__main__":
     parser = argparse.ArgumentParser(description="Denoising model trainer")
     
-    parser.add_argument("--model_name", type=str, default="cnn", help="Name of the model (default: cnn)")
+    parser.add_argument("--model", type=str, default="cnn", help="Name of the model (default: cnn)")
     parser.add_argument("--dataset", type=str, default="STL10", help="Name of the dataset (default: STL10)")
     parser.add_argument("--epochs", type=int, default=10, help="Num of Epochs for training (default: 10)")
     parser.add_argument("--batch_size", type=int, default=64, help="Batch size for training (default: 64)")
@@ -95,4 +95,4 @@ if __name__=="__main__":
     
     args = parser.parse_args()
     
-    main(model_name=args.model_name, dataset=args.dataset, epochs=args.epochs, batch_size=args.batch_size, lr=args.lr, use_batchnorm=not args.use_batchnorm)
+    main(model_name=args.model_name, dataset=args.dataset, epochs=args.epochs, batch_size=args.batch_size, lr=args.lr, use_batchnorm=not args.no_batchnorm)

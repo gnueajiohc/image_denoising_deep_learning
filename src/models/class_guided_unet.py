@@ -22,6 +22,8 @@ class ClassGuidedUNet(nn.Module):
             param.requires_grad = False
     
     def forward(self, x):
+        """forward propagation function"""
+        # classifier parameters are fixed
         with torch.no_grad():
             class_out = self.classifier(x)
         

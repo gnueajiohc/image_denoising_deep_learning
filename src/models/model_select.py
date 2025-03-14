@@ -25,8 +25,11 @@ classifier_model_list = {
 
 def select_model(model_name, use_batchnorm):
     """return denoising model class matching 'model_name'"""
-    if model_name == "cnn_unet":
-        classifier = ClassifyingCNN(hidden_channels=[64, 128, 256], use_batchnorm=True)
+    if model_name == "cnn_unet" or model_name == "resnet_unet":
+        if model_name == "cnn_unet":
+            classifier = ClassifyingCNN(hidden_channels=[64, 128, 256], use_batchnorm=use_batchnorm)
+        elif model_name == "resnet_unet":
+            classifier = ClassifyingResNet(use_batchnorm=use_batchnorm)
         load_model(classifier)
         unet = DenoisingUNet(in_channels=3, use_batchnorm=use_batchnorm, feature_channels=FEATURE_CHANNELS)
         model = ClassGuidedUNet(classifier, unet, feature_channels=FEATURE_CHANNELS)

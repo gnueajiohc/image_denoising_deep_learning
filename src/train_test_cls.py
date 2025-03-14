@@ -118,7 +118,7 @@ def main(model_name, dataset, epochs, batch_size, lr, use_batchnorm):
 if __name__=="__main__":
     parser = argparse.ArgumentParser(description="Classifier model trainer")
 
-    parser.add_argument("--model_name", type=str, default="cnn", help="Name of the model (default: cnn)")
+    parser.add_argument("--model", type=str, default="cnn", help="Name of the model (default: cnn)")
     parser.add_argument("--dataset", type=str, default="STL10", help="Name of the dataset (default: STL10)")
     parser.add_argument("--epochs", type=int, default=10, help="Num of Epochs for training (default: 10)")
     parser.add_argument("--batch_size", type=int, default=64, help="Batch size for training (default: 64)")
@@ -127,4 +127,4 @@ if __name__=="__main__":
     
     args = parser.parse_args()
     
-    main(model_name=args.model_name, dataset=args.dataset, epochs=args.epochs, batch_size=args.batch_size, lr=args.lr, use_batchnorm=not args.use_batchnorm)
+    main(model_name=args.model_name, dataset=args.dataset, epochs=args.epochs, batch_size=args.batch_size, lr=args.lr, use_batchnorm=not args.no_batchnorm)

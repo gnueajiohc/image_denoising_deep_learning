@@ -5,8 +5,8 @@ from .classifying_resnet import ClassifyingResNet
 from .classifying_cnn import ClassifyingCNN
 from. class_guided_unet import ClassGuidedUNet
 from .model_select import select_model, select_classifier_model
-from .load_model import load_model
+from .model_info import load_model, get_model_name
 
 __all__ = ["DenoisingCNN", "DenoisingCAE", "DenoisingUNet",
            "ClassifyingResNet", "ClassifyingCNN", "ClassGuidedUNet",
-           "select_model", "select_classifier_model", "load_model"]
+           "select_model", "select_classifier_model", "load_model", "get_model_name"]
