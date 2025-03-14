@@ -7,6 +7,7 @@ from utils import add_noise
 from utils import save_test_figure
 from utils import print_model_info
 from utils import save_test_score
+from utils import load_weights
 from models import select_model
 
 def test_model(model, test_loader, dataset, device="cpu"):
@@ -76,13 +77,7 @@ def main(model_name, dataset, batch_size, use_batchnorm):
     
     model = select_model(model_name, use_batchnorm)
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    model_path = f"results/weights/{model.__class__.__name__}_{dataset}.pth"
-    try:
-        model.load_state_dict(torch.load(model_path, map_location=device))
-        print(f"[INFO] Loaded model from {model_path}")
-    except FileNotFoundError:
-        print(f"[ERROR] Model file not found: {model_path}. You should train the model first.\n")
-        return
+    load_weights(model, dataset, device)
     
     print_model_info(model_name, model, dataset)
     

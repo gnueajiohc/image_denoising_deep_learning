@@ -18,7 +18,8 @@ class DenoisingUNet(nn.Module):
         self,
         in_channels=3,
         hidden_channels=[16, 32, 64, 128],
-        use_batchnorm=False
+        use_batchnorm=False,
+        feature_channels=None
     ):
         super(DenoisingUNet, self).__init__()
         
@@ -39,7 +40,7 @@ class DenoisingUNet(nn.Module):
                                           2 * current_in_channels,
                                           use_batchnorm=use_batchnorm)
         current_in_channels *= 2
-        # after bottleneck, STL10 image (3 x 96 x 96) -> (128 x 6 x 6)
+        # after bottleneck, STL10 image (128 x 6 x 6) -> (256 x 6 x 6)
         
         # up_convs for upside convolution
         up_convs = []
@@ -54,6 +55,11 @@ class DenoisingUNet(nn.Module):
             
             # after concatenating, channel size will be double (check forward function)
             current_in_channels = current_out_channels * 2
+            
+            # if we have additional 'feature_channels', we need to add it to 'in_channels'
+            if (current_in_channels == 2 * hidden_channels[-1]) and (feature_channels is not None):
+                current_in_channels += feature_channels
+                
             up_blocks.append(self.conv_block(in_channels=current_in_channels,
                                              out_channels=current_out_channels,
                                              use_batchnorm=use_batchnorm))
@@ -85,7 +91,7 @@ class DenoisingUNet(nn.Module):
             
         return nn.Sequential(*layers)
     
-    def forward(self, x):
+    def forward(self, x, class_out=None):
         """forward propagation function"""
         # down
         skip_connections = []
@@ -99,8 +105,16 @@ class DenoisingUNet(nn.Module):
         x = self.bottleneck(x)
         skip_connections = skip_connections[::-1]
         
+        x = self.up_convs[0](x)
+        # concatenate
+        x = torch.cat([x, skip_connections[0]], dim=1)
+        # if we have additional "feature_output" concatenate it
+        if class_out is not None:
+            x = torch.cat([x, class_out], dim=1) # "class_out" should be in same W x H shape
+        x = self.up_blocks[0](x)
+        
         # up
-        for i in range(len(self.up_convs)):
+        for i in range(1, len(self.up_convs)):
             x = self.up_convs[i](x)
             # concatenate
             x = torch.cat([x, skip_connections[i]], dim=1)

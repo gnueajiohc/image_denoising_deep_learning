@@ -9,6 +9,7 @@ from utils import get_train_loader, get_test_loader
 from utils import add_noise
 from utils import print_model_info
 from models import ClassifyingResNet, ClassifyingCNN
+from models import select_classifier_model
 
 def train_cls_model(model, train_loader, test_loader, save_name, epochs=10, lr=1e-3, device="cpu"):
     """
@@ -106,19 +107,13 @@ def main(model_name, dataset, epochs, batch_size, lr, use_batchnorm):
     train_loader = get_train_loader(dataset=dataset, batch_size=batch_size)
     test_loader = get_test_loader(dataset=dataset, batch_size=batch_size)
     
-    model = ClassifyingResNet(use_batchnorm=use_batchnorm)
+    model = select_classifier_model(model_name, use_batchnorm)
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    print_model_info("ResNet", model, dataset)
+    print_model_info(model_name, model, dataset)
     
     save_name = f"{model.__class__.__name__}_{dataset}"
     train_cls_model(model, train_loader, test_loader, save_name=save_name, epochs=epochs, lr=lr, device=device) # training model
 
-    model = ClassifyingCNN(use_batchnorm=use_batchnorm)
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    print_model_info("ResNet", model, dataset)
-    
-    save_name = f"{model.__class__.__name__}_{dataset}"
-    train_cls_model(model, train_loader, test_loader, save_name=save_name, epochs=epochs, lr=lr, device=device)
   
 if __name__=="__main__":
     parser = argparse.ArgumentParser(description="Classifier model trainer")
