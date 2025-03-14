@@ -23,15 +23,6 @@ def add_noise(image, noise_level=0.2, sp_prob=0.05):
 
     return noisy_image
 
-def load_weights(model, dataset, device):
-    model_path = f"results/weights/{model.__class__.__name__}_{dataset}.pth"
-    try:
-        model.load_state_dict(torch.load(model_path, map_location=device))
-        print(f"[INFO] Loaded model from {model_path}")
-    except FileNotFoundError:
-        print(f"[ERROR] Model file not found: {model_path}. You should train the model first.\n")
-        return
-
 def save_test_figure(original, noisy, denoised, save_path, num_images=3):
     """
     Displays and saves up to 'num_images' rows of images, each row containing

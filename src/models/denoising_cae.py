@@ -5,7 +5,7 @@ import torch.nn as nn
 # -----------------------------------
 class DenoisingCAE(nn.Module):
     """
-    Denoising CAE Model (default dataset is CIFAR10)
+    Denoising CAE Model (default dataset is STL10)
     
     Args:
         in_channels (int): the num of input image channels

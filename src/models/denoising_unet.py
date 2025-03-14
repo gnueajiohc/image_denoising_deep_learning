@@ -7,7 +7,7 @@ import torch.nn.functional as F
 # -----------------------------------
 class DenoisingUNet(nn.Module):
     """
-    Denoising U-Net Model (default dataset is CIFAR10)
+    Denoising U-Net Model (default dataset is STL10)
     
     Args:
         in_channels (int): the num of input image channels

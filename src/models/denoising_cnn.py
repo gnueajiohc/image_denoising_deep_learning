@@ -5,7 +5,7 @@ import torch.nn as nn
 # -----------------------------------
 class DenoisingCNN(nn.Module):
     """
-    Denoising CNN Model (default dataset is CIFAR10)
+    Denoising CNN Model (default dataset is STL10)
     
     Args:
         in_channels (int): the num of input image channels

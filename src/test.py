@@ -7,7 +7,7 @@ from utils import add_noise
 from utils import save_test_figure
 from utils import print_model_info
 from utils import save_test_score
-from utils import load_weights
+from models import load_model
 from models import select_model
 
 def test_model(model, test_loader, dataset, device="cpu"):
@@ -77,7 +77,7 @@ def main(model_name, dataset, batch_size, use_batchnorm):
     
     model = select_model(model_name, use_batchnorm)
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    load_weights(model, dataset, device)
+    load_model(model, dataset, device)
     
     print_model_info(model_name, model, dataset)
     
@@ -87,7 +87,7 @@ if __name__=="__main__":
     parser = argparse.ArgumentParser(description="Denoising model tester")
     
     parser.add_argument("--model_name", type=str, default="cnn", help="Name of the model (default: cnn)")
-    parser.add_argument("--dataset", type=str, default="CIFAR10", help="Name of the dataset (default: CIFAR10)")
+    parser.add_argument("--dataset", type=str, default="STL10", help="Name of the dataset (default: STL10)")
     parser.add_argument("--batch_size", type=int, default=64, help="Batch size for testing (default: 64)")
     parser.add_argument("--use_batchnorm", action="store_true", help="Use batch normalization or not")
     
