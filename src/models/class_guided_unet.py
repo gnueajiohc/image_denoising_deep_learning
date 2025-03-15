@@ -1,14 +1,19 @@
 import torch
 import torch.nn as nn
 
-FEATURE_CHANNELS = 16
+FEATURE_CHANNELS = 32
 
 class ClassGuidedUNet(nn.Module):
+    """
+    Class Guided U-Net Model (default dataset is STL10)
+    
+    Args:
+        classifier (nn.Module): classifier class (ClassifyingCNN or ClassifyingResNet)
+        unet (DenoisingUNet): U-Net class
+        feature_channels (int): the num of feature channels
+    """
     def __init__(self, classifier, unet, feature_channels=FEATURE_CHANNELS):
-        """
-        Args:
-
-        """
+        
         super(ClassGuidedUNet, self).__init__()
         self.classifier = classifier
         self.unet = unet

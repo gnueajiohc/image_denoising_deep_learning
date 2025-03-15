@@ -4,7 +4,7 @@ from .denoising_unet import DenoisingUNet
 from .classifying_resnet import ClassifyingResNet
 from .classifying_cnn import ClassifyingCNN
 from .class_guided_unet import ClassGuidedUNet, FEATURE_CHANNELS
-from .load_model import load_model
+from .model_info import load_model
 
 # dictionary connecting model name to model class
 model_list = {

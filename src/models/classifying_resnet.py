@@ -26,6 +26,7 @@ class BasicBlock(nn.Module):
     ):
         super(BasicBlock, self).__init__()
         
+        # list for 1st convolution block layers
         conv_block1 = []
         conv_block1.append(nn.Conv2d(in_channels,
                                      out_channels,
@@ -37,6 +38,7 @@ class BasicBlock(nn.Module):
             conv_block1.append(nn.BatchNorm2d(out_channels))
         self.conv1 = nn.Sequential(*conv_block1)
         
+        # list for 2nd convolution block layers
         conv_block2 = []
         conv_block2.append(nn.Conv2d(out_channels,
                                      out_channels,
@@ -49,7 +51,7 @@ class BasicBlock(nn.Module):
         if use_batchnorm:
             conv_block2.append(nn.BatchNorm2d(out_channels))
         
-        # Skip connection: if channel sizes differ, we need a 1x1 conv
+        # skip connection: if channel sizes differ, we need a 1x1 conv
         self.shortcut = nn.Sequential()
         if (stride != 1) or (in_channels != out_channels):
             shortcut_layers = [
@@ -61,6 +63,7 @@ class BasicBlock(nn.Module):
             self.shortcut = nn.Sequential(*shortcut_layers)
     
     def forward(self, x):
+        """forward propagation function"""
         identity = self.shortcut(x)
         
         out = self.conv1(x)
@@ -78,8 +81,15 @@ class BasicBlock(nn.Module):
 # -----------------------------------
 class ClassifyingResNet(nn.Module):
     """
-    Args:
+    Classifying ResNet Model (default dataset is STL10)
     
+    Args:
+        in_channels (int): the num of input image channels
+        num_classes (int): the num of label classes
+        block_channels (list[int]): the num of hidden layers' channels
+        num_blocks (list[int]): the num of basic blocks
+        strides (list[int]): stride value of each block
+        use_batchnorm (bool): whether to use batch normalization
     """
     def __init__(
         self,
@@ -94,6 +104,7 @@ class ClassifyingResNet(nn.Module):
         
         self.use_batchnorm=use_batchnorm
         
+        # list for conv block layers
         conv_block = []
         conv_block.append(nn.Conv2d(in_channels=in_channels,
                                     out_channels=in_channels,
@@ -122,6 +133,7 @@ class ClassifyingResNet(nn.Module):
     def _make_layer(self, in_channels, out_channels, block_count, stride):
         """make ResNet layer from 'in_channels' to 'out_channels'"""
         layers = []
+        # at least one block
         layers.append(
             BasicBlock(
                 in_channels=in_channels,
