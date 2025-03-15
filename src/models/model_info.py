@@ -1,9 +1,14 @@
 import torch
-from class_guided_unet import ClassGuidedUNet
+from .class_guided_unet import ClassGuidedUNet
 
 def load_model(model, dataset="STL10", device="cuda"):
     """helper function to load model parameters"""
-    model_path = f"results/weights/{model.__class__.__name__}_{dataset}.pth"
+    model_path = f"results/weights/{model.__class__.__name__}_{dataset}"
+    
+    if isinstance(model, ClassGuidedUNet):
+        model_path += f"_{model.classifier.__class__.__name__}"
+        
+    model_path += ".pth"
     try:
         model.load_state_dict(torch.load(model_path, map_location=device))
         print(f"[INFO] Loaded model from {model_path}")
@@ -12,7 +17,9 @@ def load_model(model, dataset="STL10", device="cuda"):
         return
     
 def get_model_name(model, dataset="STL10"):
+    """get well formed model name"""
     save_name = f"{model.__class__.__name__}_{dataset}"
+    
     if isinstance(model, ClassGuidedUNet):
         save_name += f"_{model.classifier.__class__.__name__}"
     

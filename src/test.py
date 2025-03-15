@@ -94,4 +94,4 @@ if __name__=="__main__":
     
     args = parser.parse_args()
     
-    main(model_name=args.model_name, dataset=args.dataset, batch_size=args.batch_size, use_batchnorm=not args.no_batchnorm)
+    main(model_name=args.model, dataset=args.dataset, batch_size=args.batch_size, use_batchnorm=not args.no_batchnorm)

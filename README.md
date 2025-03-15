@@ -48,7 +48,7 @@ Let me introduce my analysis of denoising models.
     - scores
       - models' test score will be stored
     - weights
-      - models weights will be stored
+      - models weights will be stored (all of them in original repo are about normal noise)
   - utils
     - you can find versatile methods I used
     - loading dataset, adding noise, saving files, ... all of them are implemented here
@@ -85,9 +85,9 @@ For both models, you can use ```--help``` options for more informations about th
 **The models are designed to focus on ```STL10``` dataset.**
 
 If you want to use ```CIFAR10```, you **should** to adjust some hidden channels values.
-## Experiment
+## 🧪 Experiment
 
-### 3 basic denoising models
+### 🖼️ 3 basic denoising models
 I trained 3 denoising models Convolutional Neural Network(CNN), Convolutional Auto-Encoder(CAE) and U-Net(UNet).
 
 For model evaluation, I used Peak Signal-to-noise ratio(PSNR), Structural Similarity Index Measure(SSIM).
@@ -120,7 +120,11 @@ What seems interesting is that using batch normalization doesn't affect CNN's pe
 
 In **Fig2, Fig3, Fig4**, you can check that CNN, UNet are doing denoising tasks quite well. But, there's still some blur and bad denoising in harder(intense) noise case.
 
-My idea comes from here. "If we can classify what the object in noised image is, denoising tasks will be much simpler. Let's use classifier!"
+### 🎯 Classifier models
+
+💡My idea comes from here:
+
+"If we can classify what the object in noised image is, denoising tasks will be much simpler. Let's use classifier!"
 
 I choose CNN and ResNet model which used to be dominant in classification task.
 
@@ -132,6 +136,8 @@ I choose CNN and ResNet model which used to be dominant in classification task.
 **Table1. Denoising U-Net Results**
 
 Classifying noisy images was quite challenging. **Table1** shows that both models achieved around 50% accuracy, but I believed that even these less accurate models could still be useful. Therefore, I integrated one classifier as additional feature channels in the decoder part of the U-Net. (I choosed U-Net rather than CNN, because its performance is better in harder noise)
+
+### 🏆 Class Guided U-Net models
 
 | ![Denoising Models Performance](assets/denoising_5models_performances.png) |
 |:--:|
@@ -149,7 +155,11 @@ Unfortunately, the improvement is not that big. However, CNN Guided U-Net got th
 
 I failed to get significant improvement. However, If the classifier was better, the class guided denoising model would do much better. This would be my next project someday.
 
-### Appendix
+## 📩 Contact
+
+If you have any issues or questions, suggestions about this repository. Please contact me chlwodnd0718@snu.ac.kr.
+
+## 📂 Appendix
 | Model           | Parameters  | No BatchNorm               | BatchNorm                   | BatchNorm + Harder Noise |
 |:--------------:|:----------:|:---------------------------:|:---------------------------:|:-------------------------:|
 | **CNN**       | 186,688    | PSNR: **24.5342**, SSIM: **0.7614** | PSNR: 24.0136, SSIM: 0.7426 | PSNR: 20.8161, SSIM: 0.5922 |
