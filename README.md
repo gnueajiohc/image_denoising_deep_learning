@@ -33,7 +33,7 @@ Let me introduce my analysis of denoising models.
 ├── README.md
 └── requirements.txt
 ```
-### 📌 Project oveview
+### 📌 Structure overview
 - src
   - data
     - directory where data will be downloaded
